@@ -1,0 +1,22 @@
+{{- if .Values.s3.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    helm.sh/chart: {{ include "thanos.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+  name: {{ include "thanos.fullname" . }}-thanos-s3-config
+data:
+  s3.yaml: |
+    type: S3
+    config:
+      bucket: {{ .Values.s3.bucket }}
+      endpoint: {{ .Values.s3.endpoint }}
+      insecure: {{ .Values.s3.insecure }}
+      signature_version2: {{ .Values.s3.signatureV2 }}
+      encrypt_sse: {{ .Values.s3.encryptSse }}
+      http_config:
+        idle_conn_timeout: 0s
+{{- end -}}

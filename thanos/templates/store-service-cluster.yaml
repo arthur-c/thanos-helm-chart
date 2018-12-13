@@ -1,0 +1,35 @@
+{{- if .Values.store.clusterService.enabled }}
+{{- if not .Values.store.clusterDisabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "thanos.fullname" . }}-store-cluster
+{{- if .Values.store.clusterService.annotations }}
+  annotations:
+{{ toYaml .Values.store.clusterService.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    helm.sh/chart: {{ include "thanos.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: store
+spec:
+  type: {{ .Values.store.clusterService.type }}
+  {{- if .Values.store.clusterService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.store.clusterService.externalTrafficPolicy }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.store.clusterService.port }}
+      targetPort: cluster
+      {{- if .Values.store.clusterService.nodePortEnabled }}
+      nodePort: {{ .Values.store.clusterService.nodePort }}
+      {{- end }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: store
+{{- end }}
+{{- end -}}

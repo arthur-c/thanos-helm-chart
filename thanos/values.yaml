@@ -1,0 +1,175 @@
+# Default values for thanos-store.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+
+image:
+  repository: improbable/thanos
+  tag: v0.2.0
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+s3:
+  enabled: false
+  bucket: ""
+  endpoint: ""
+  insecure: false
+  signatureV2: true
+  encryptSse: false
+
+
+# Thanos store configuration
+store:
+  enabled: true
+  replicaCount: 1
+
+  logLevel: debug
+
+  clusterDisabled: true
+
+  # cert, key and ca are base64 encoded strings
+  tlsServer:
+    enabled: false
+    cert: ""
+    key: ""
+    ca: ""
+
+  deployment:
+    annotations: {}
+      # iam.amazonaws.com/role: prometheus-thanos-store
+
+    container:
+      httpPort: 10902
+      grpcPort: 10901
+      clusterPort: 10900
+
+  clusterDisabled: true
+
+  clusterService:
+    enabled: false
+    type: ClusterIP
+    port: 10900
+    nodePortEnabled: false
+    nodePort: 30900
+    externalTrafficPolicy: ""
+    annotations: {}
+
+  grpcService:
+    enabled: true
+    type: ClusterIP
+    port: 10901
+    nodePortEnabled: false
+    NodePort: 30901
+    externalTrafficPolicy: ""
+    annotations: {}
+
+  httpService:
+    enabled: true
+    type: ClusterIP
+    port: 10902
+    nodePortEnabled: false
+    nodePortEnabled: false
+    nodePort: 30902
+    externalTrafficPolicy: ""
+    annotations: {}
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+# Thanos query configuration
+query:
+  enabled: true
+  replicaCount: 1
+  logLevel: debug
+  stores:
+    - store.example.local:10901
+  queryReplicaLabel: replica
+
+  # cert, key and ca are base64 encoded strings
+  tlsClient:
+    enabled: false
+    cert: ""
+    key: ""
+    ca: ""
+    serverName: ""
+
+  # cert, key and ca are base64 encoded strings
+  tlsServer:
+    enabled: false
+    cert: ""
+    key: ""
+    ca: ""
+
+  deployment:
+    annotations: {}
+      # iam.amazonaws.com/role: prometheus
+
+    container:
+      httpPort: 10902
+      grpcPort: 10901
+      clusterPort: 10900
+
+  clusterDisabled: true
+
+  clusterService:
+    enabled: false
+    type: ClusterIP
+    port: 10900
+    nodePortEnabled: false
+    nodePort: 30900
+    externalTrafficPolicy: ""
+    annotations: {}
+
+  grpcService:
+    enabled: true
+    type: ClusterIP
+    port: 10901
+    nodePortEnabled: false
+    NodePort: 30901
+    externalTrafficPolicy: ""
+    annotations: {}
+
+  httpService:
+    enabled: true
+    type: ClusterIP
+    port: 10902
+    nodePortEnabled: false
+    nodePortEnabled: false
+    nodePort: 30902
+    externalTrafficPolicy: ""
+    annotations: {}
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}

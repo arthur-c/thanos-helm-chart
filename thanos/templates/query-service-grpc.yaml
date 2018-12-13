@@ -1,0 +1,33 @@
+{{- if .Values.query.grpcService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "thanos.fullname" . }}-query-grpc
+{{- if .Values.query.grpcService.annotations }}
+  annotations:
+{{ toYaml .Values.query.grpcService.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    helm.sh/chart: {{ include "thanos.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: query
+spec:
+  type: {{ .Values.query.grpcService.type }}
+  {{- if .Values.query.grpcService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.query.grpcService.externalTrafficPolicy }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.query.grpcService.port }}
+      targetPort: grpc
+      {{- if .Values.query.grpcService.nodePortEnabled }}
+      nodePort: {{ .Values.query.grpcService.nodePort }}
+      {{- end }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: query
+{{- end -}}

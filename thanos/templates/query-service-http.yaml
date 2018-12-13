@@ -1,0 +1,33 @@
+{{- if .Values.query.httpService.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "thanos.fullname" . }}-query-http
+{{- if .Values.query.httpService.annotations }}
+  annotations:
+{{ toYaml .Values.query.httpService.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    helm.sh/chart: {{ include "thanos.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: query
+spec:
+  type: {{ .Values.query.httpService.type }}
+  {{- if .Values.query.httpService.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.query.httpService.externalTrafficPolicy }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.query.httpService.port }}
+      targetPort: http
+      {{- if .Values.query.httpService.nodePortEnabled }}
+      nodePort: {{ .Values.query.httpService.nodePort }}
+      {{- end }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: query
+{{- end -}}

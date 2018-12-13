@@ -1,0 +1,99 @@
+{{- if .Values.query.enabled }}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "thanos.fullname" . }}-query
+  labels:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    helm.sh/chart: {{ include "thanos.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: query
+spec:
+  replicas: {{ .Values.query.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "thanos.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: query
+  template:
+    metadata:
+    {{- if .Values.query.deployment.annotations }}
+      annotations:
+{{ toYaml .Values.query.deployment.annotations | indent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "thanos.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: query
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "query"
+            - "--log.level={{ .Values.query.logLevel }}"
+            - "--cluster.disable"
+            {{- range .Values.query.stores }}
+            - "--store={{ . }}"
+            {{- end }}
+            - "--query.replica-label={{ .Values.query.queryReplicaLabel }}"
+            {{- if .Values.query.tlsClient.enabled }}
+            - "--grpc-client-tls-secure"
+            - "--grpc-client-tls-cert=/thanos-tls-client/client.crt"
+            - "--grpc-client-tls-key=/thanos-tls-client/client.key"
+            - "--grpc-client-tls-ca=/thanos-tls-client/ca.crt"
+            - "--grpc-client-server-name={{ .Values.query.tlsClient.serverName }}"
+            {{- end }}
+            {{- if .Values.query.tlsServer.enabled }}
+            - "--grpc-server-tls-cert=/thanos-tls-server/server.crt"
+            - "--grpc-server-tls-key=/thanos-tls-server/server.key"
+            - "--grpc-server-tls-client-ca=/thanos-tls-server/ca.crt"
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.query.deployment.container.httpPort }}
+            - name: grpc
+              containerPort: {{ .Values.query.deployment.container.grpcPort }}
+            - name: cluster
+              containerPort: {{ .Values.query.deployment.container.clusterPort }}
+          volumeMounts:
+            {{- if .Values.query.tlsClient.enabled }}
+            - name: {{ include "thanos.fullname" . }}-thanos-query-tls-client
+              mountPath: /thanos-tls-client
+            {{- end }}
+            {{- if .Values.query.tlsServer.enabled }}
+            - name: {{ include "thanos.fullname" . }}-thanos-query-tls-server
+              mountPath: /thanos-tls-server
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: http
+          resources:
+{{ toYaml .Values.query.resources | indent 12 }}
+    {{- with .Values.query.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.query.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.query.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      volumes:
+      {{- if .Values.query.tlsClient.enabled }}
+        - name: {{ include "thanos.fullname" . }}-thanos-query-tls-client
+          secret:
+            secretName: {{ include "thanos.fullname" . }}-thanos-query-tls-client
+      {{- end }}
+      {{- if .Values.query.tlsServer.enabled }}
+        - name: {{ include "thanos.fullname" . }}-thanos-query-tls-server
+          secret:
+            secretName: {{ include "thanos.fullname" . }}-thanos-query-tls-server
+      {{- end }}
+{{- end -}}
