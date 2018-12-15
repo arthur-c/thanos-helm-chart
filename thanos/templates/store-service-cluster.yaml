@@ -26,7 +26,7 @@ spec:
       nodePort: {{ .Values.store.clusterService.nodePort }}
       {{- end }}
       protocol: TCP
-      name: http
+      name: cluster
   selector:
     app.kubernetes.io/name: {{ include "thanos.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
