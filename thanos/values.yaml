@@ -173,3 +173,37 @@ query:
   tolerations: []
 
   affinity: {}
+
+# Thanos compact configuration
+compact:
+  enabled: false
+  replicaCount: 1
+
+  syncDelay: 30m
+  retentionResolutionRaw: 0d
+  retentionResolution5m: 0d
+  retentionResolution1h: 0d
+  wait: true
+
+  logLevel: debug
+
+  clusterDisabled: true
+
+  deployment:
+    annotations: {}
+      # iam.amazonaws.com/role: prometheus-thanos-store
+
+    container:
+      httpPort: 10902
+      grpcPort: 10901
+      clusterPort: 10900
+
+  httpService:
+    enabled: true
+    type: ClusterIP
+    port: 10902
+    nodePortEnabled: false
+    nodePortEnabled: false
+    nodePort: 30902
+    externalTrafficPolicy: ""
+    annotations: {}

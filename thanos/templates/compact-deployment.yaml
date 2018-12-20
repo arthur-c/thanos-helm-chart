@@ -1,0 +1,80 @@
+{{- if .Values.compact.enabled }}
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ include "thanos.fullname" . }}-compact
+  labels:
+    app.kubernetes.io/name: {{ include "thanos.name" . }}
+    helm.sh/chart: {{ include "thanos.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/component: compact
+spec:
+  replicas: {{ .Values.compact.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "thanos.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: compact
+  template:
+    metadata:
+    {{- if .Values.compact.deployment.annotations }}
+      annotations:
+{{ toYaml .Values.compact.deployment.annotations | indent 8 }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ include "thanos.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: compact
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "compact"
+            - "--log.level={{ .Values.compact.logLevel }}"
+            - "--data-dir=/var/thanos/compact"
+            - "--sync-delay={{ .Values.compact.syncDelay }}"
+            - "--retention.resolution-raw={{ .Values.compact.retentionResolutionRaw }}"
+            - "--retention.resolution-5m={{ .Values.compact.retentionResolution5m }}"
+            - "--retention.resolution-1h={{ .Values.compact.retentionResolution1h }}"
+            {{- if .Values.compact.wait }}
+            - "--wait"
+            {{- end }}
+            {{- if .Values.s3.enabled }}
+            - "--objstore.config-file=/thanos-s3/s3.yaml"
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.compact.deployment.container.httpPort }}
+          volumeMounts:
+            - name: data
+              mountPath: /var/thanos/compact
+            {{- if .Values.s3.enabled }}
+            - name: {{ include "thanos.fullname" . }}-thanos-s3-config
+              mountPath: /thanos-s3
+            {{- end }}
+          resources:
+{{ toYaml .Values.compact.resources | indent 12 }}
+    {{- with .Values.compact.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.compact.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.compact.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: data
+          mountPath: /var/thanos/compact
+      {{- if .Values.s3.enabled }}
+        - name: {{ include "thanos.fullname" . }}-thanos-s3-config
+          configMap:
+            name: {{ include "thanos.fullname" . }}-thanos-s3-config
+      {{- end }}
+{{- end -}}
