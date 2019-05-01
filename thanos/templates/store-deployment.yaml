@@ -38,14 +38,28 @@ spec:
             {{- if .Values.store.clusterDisabled }}
             - "--cluster.disable"
             {{- end }}
+            # TODO: this should be removed (deprecated in favor of objstore.config)
             {{- if .Values.s3.enabled }}
             - "--objstore.config-file=/thanos-s3/s3.yaml"
+            {{- end }}
+            {{- if .Values.objectStorageConfig.enabled }}
+            - "--objstore.config=$(OBJSTORE_CONFIG)"
             {{- end }}
             {{- if .Values.store.tlsServer.enabled }}
             - "--grpc-server-tls-cert=/thanos-tls-server/server.crt"
             - "--grpc-server-tls-key=/thanos-tls-server/server.key"
+            {{- if .Values.store.tlsServer.ca }}
             - "--grpc-server-tls-client-ca=/thanos-tls-server/ca.crt"
             {{- end }}
+            {{- end }}
+          {{- if .Values.objectStorageConfig.enabled }}
+          env:
+          - name: OBJSTORE_CONFIG
+            valueFrom:
+              secretKeyRef:
+                key: {{ .Values.objectStorageConfig.key }}
+                name: {{ .Values.objectStorageConfig.name }}
+          {{- end }}
           ports:
             - name: http
               containerPort: {{ .Values.store.deployment.container.httpPort }}

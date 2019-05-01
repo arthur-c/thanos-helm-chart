@@ -1,3 +1,4 @@
+{{- if .Values.query.enabled }}
 {{- if .Values.query.clusterService.enabled }}
 {{- if not .Values.query.clusterDisabled }}
 apiVersion: v1
@@ -32,4 +33,5 @@ spec:
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: query
 {{- end }}
+{{- end -}}
 {{- end -}}

@@ -49,7 +49,9 @@ spec:
             {{- if .Values.query.tlsServer.enabled }}
             - "--grpc-server-tls-cert=/thanos-tls-server/server.crt"
             - "--grpc-server-tls-key=/thanos-tls-server/server.key"
+            {{- if .Values.query.tlsServer.ca }}
             - "--grpc-server-tls-client-ca=/thanos-tls-server/ca.crt"
+            {{- end }}
             {{- end }}
           ports:
             - name: http
