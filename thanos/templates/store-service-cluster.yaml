@@ -1,3 +1,4 @@
+{{- if .Values.store.enabled }}
 {{- if .Values.store.clusterService.enabled }}
 {{- if not .Values.store.clusterDisabled }}
 apiVersion: v1
@@ -31,5 +32,6 @@ spec:
     app.kubernetes.io/name: {{ include "thanos.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: store
-{{- end }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
