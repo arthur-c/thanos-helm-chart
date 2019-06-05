@@ -2,4 +2,4 @@ apiVersion: v1
 appVersion: "0.3.2"
 description: A Helm chart for thanos
 name: thanos
-version: 0.3.0
+version: 1.0.0

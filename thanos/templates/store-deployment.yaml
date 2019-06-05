@@ -80,7 +80,7 @@ spec:
     {{- end }}
       volumes:
         - name: data
-          mountPath: /var/thanos/store
+          emptyDir: {}
       {{- if .Values.s3.enabled }}
         - name: {{ include "thanos.fullname" . }}-thanos-s3-config
           configMap:
