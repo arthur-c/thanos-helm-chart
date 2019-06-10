@@ -102,6 +102,14 @@ query:
     - store.example.local:10901
   queryReplicaLabel: replica
 
+  ingress:
+    enabled: false
+    annotations: {}
+    host: ""
+    tls:
+      - hosts: [ ]
+        secretName: ""
+
   # cert, key and ca are base64 encoded strings
   tlsClient:
     enabled: false
