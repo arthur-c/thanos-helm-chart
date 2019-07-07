@@ -31,6 +31,7 @@ store:
 
   # cert, key and ca are base64 encoded strings
   tlsServer:
+    secretName: "" # name of an existing secret
     enabled: false
     cert: ""
     key: ""
@@ -104,6 +105,7 @@ query:
 
   # cert, key and ca are base64 encoded strings
   tlsClient:
+    secretName: "" # name of an existing secret
     enabled: false
     cert: ""
     key: ""
@@ -112,6 +114,7 @@ query:
 
   # cert, key and ca are base64 encoded strings
   tlsServer:
+    secretName: "" # name of an existing secret
     enabled: false
     cert: ""
     key: ""
