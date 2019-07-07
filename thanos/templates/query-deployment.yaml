@@ -41,14 +41,14 @@ spec:
             - "--query.replica-label={{ .Values.query.queryReplicaLabel }}"
             {{- if .Values.query.tlsClient.enabled }}
             - "--grpc-client-tls-secure"
-            - "--grpc-client-tls-cert=/thanos-tls-client/client.crt"
-            - "--grpc-client-tls-key=/thanos-tls-client/client.key"
+            - "--grpc-client-tls-cert=/thanos-tls-client/tls.crt"
+            - "--grpc-client-tls-key=/thanos-tls-client/tls.key"
             - "--grpc-client-tls-ca=/thanos-tls-client/ca.crt"
             - "--grpc-client-server-name={{ .Values.query.tlsClient.serverName }}"
             {{- end }}
             {{- if .Values.query.tlsServer.enabled }}
-            - "--grpc-server-tls-cert=/thanos-tls-server/server.crt"
-            - "--grpc-server-tls-key=/thanos-tls-server/server.key"
+            - "--grpc-server-tls-cert=/thanos-tls-server/tls.crt"
+            - "--grpc-server-tls-key=/thanos-tls-server/tls.key"
             - "--grpc-server-tls-client-ca=/thanos-tls-server/ca.crt"
             {{- end }}
           ports:

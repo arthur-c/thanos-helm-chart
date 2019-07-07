@@ -42,8 +42,8 @@ spec:
             - "--objstore.config-file=/thanos-s3/s3.yaml"
             {{- end }}
             {{- if .Values.store.tlsServer.enabled }}
-            - "--grpc-server-tls-cert=/thanos-tls-server/server.crt"
-            - "--grpc-server-tls-key=/thanos-tls-server/server.key"
+            - "--grpc-server-tls-cert=/thanos-tls-server/tls.crt"
+            - "--grpc-server-tls-key=/thanos-tls-server/tls.key"
             - "--grpc-server-tls-client-ca=/thanos-tls-server/ca.crt"
             {{- end }}
           ports:
