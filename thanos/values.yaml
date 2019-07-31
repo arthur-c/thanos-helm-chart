@@ -5,7 +5,7 @@
 
 image:
   repository: improbable/thanos
-  tag: v0.3.2
+  tag: v0.6.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
@@ -19,15 +19,12 @@ s3:
   signatureV2: true
   encryptSse: false
 
-
 # Thanos store configuration
 store:
   enabled: true
   replicaCount: 1
 
   logLevel: debug
-
-  clusterDisabled: true
 
   # cert, key and ca are base64 encoded strings
   tlsServer:
@@ -45,7 +42,6 @@ store:
       grpcPort: 10901
       clusterPort: 10900
 
-  clusterDisabled: true
 
   clusterService:
     enabled: false
@@ -69,7 +65,6 @@ store:
     enabled: true
     type: ClusterIP
     port: 10902
-    nodePortEnabled: false
     nodePortEnabled: false
     nodePort: 30902
     externalTrafficPolicy: ""
@@ -119,14 +114,12 @@ query:
 
   deployment:
     annotations: {}
-      # iam.amazonaws.com/role: prometheus
+      # iam.amazonaws.com/role: prometheus-thanos
 
     container:
       httpPort: 10902
       grpcPort: 10901
       clusterPort: 10900
-
-  clusterDisabled: true
 
   clusterService:
     enabled: false
@@ -150,7 +143,6 @@ query:
     enabled: true
     type: ClusterIP
     port: 10902
-    nodePortEnabled: false
     nodePortEnabled: false
     nodePort: 30902
     externalTrafficPolicy: ""
@@ -179,15 +171,13 @@ compact:
   enabled: false
   replicaCount: 1
 
-  syncDelay: 30m
+  consistencyDelay: 30m
   retentionResolutionRaw: 0d
   retentionResolution5m: 0d
   retentionResolution1h: 0d
   wait: true
 
   logLevel: debug
-
-  clusterDisabled: true
 
   deployment:
     annotations: {}
@@ -202,7 +192,6 @@ compact:
     enabled: true
     type: ClusterIP
     port: 10902
-    nodePortEnabled: false
     nodePortEnabled: false
     nodePort: 30902
     externalTrafficPolicy: ""

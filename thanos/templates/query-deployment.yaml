@@ -34,7 +34,6 @@ spec:
           args:
             - "query"
             - "--log.level={{ .Values.query.logLevel }}"
-            - "--cluster.disable"
             {{- range .Values.query.stores }}
             - "--store={{ . }}"
             {{- end }}
