@@ -35,7 +35,7 @@ spec:
             - "compact"
             - "--log.level={{ .Values.compact.logLevel }}"
             - "--data-dir=/var/thanos/compact"
-            - "--sync-delay={{ .Values.compact.syncDelay }}"
+            - "--consistency-delay={{ .Values.compact.consistencyDelay }}"
             - "--retention.resolution-raw={{ .Values.compact.retentionResolutionRaw }}"
             - "--retention.resolution-5m={{ .Values.compact.retentionResolution5m }}"
             - "--retention.resolution-1h={{ .Values.compact.retentionResolution1h }}"
